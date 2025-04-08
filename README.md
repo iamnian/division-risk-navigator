@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/5892e165-fd4a-40c8-985b-715bea761f46
+**URL**: https://preview--division-risk-navigator.lovable.app/
 
 ## How can I edit this code?
 
