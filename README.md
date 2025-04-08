@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# Group 10 SIS Dashboard
 
 ## Project info
 
