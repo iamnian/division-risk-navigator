@@ -55,22 +55,16 @@ const DivisionDetails: React.FC<DivisionDetailsProps> = ({
             <p className="text-muted-foreground">{division.county} • Population: {division.population.toLocaleString()}</p>
           </div>
           
-          <TabsList>
-            <TabsTrigger 
-              value="current" 
-              className={viewMode === 'current' ? 'bg-primary text-primary-foreground' : ''}
-              onClick={() => onViewModeChange('current')}
-            >
-              Current
-            </TabsTrigger>
-            <TabsTrigger 
-              value="future" 
-              className={viewMode === 'future' ? 'bg-primary text-primary-foreground' : ''}
-              onClick={() => onViewModeChange('future')}
-            >
-              Future
-            </TabsTrigger>
-          </TabsList>
+          <Tabs value={viewMode} onValueChange={onViewModeChange}>
+            <TabsList>
+              <TabsTrigger value="current">
+                Current
+              </TabsTrigger>
+              <TabsTrigger value="future">
+                Future
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       </CardHeader>
 
