@@ -20,13 +20,11 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
 }) => {
   const { toast } = useToast();
   
-  // Get base risk assessment based on view mode and projection year
   const getBaseRisk = (): RiskAssessment => {
     if (viewMode === 'current') {
       return division.currentRisk;
     }
     
-    // Generate dynamic future risk data based on projection year
     const baseRisk = division.futureRisk;
     const yearFactor = getYearFactor(projectionYear);
     
@@ -41,8 +39,7 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
       }
     };
   };
-  
-  // Function to calculate a factor based on the selected year
+
   function getYearFactor(year: string): number {
     switch (year) {
       case "2025":
@@ -60,7 +57,6 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
     }
   }
 
-  // Default modifiers (0% change)
   const initialModifiers: ScenarioModifiers = {
     dependencyRatioChange: 0,
     hospitalStressChange: 0,
@@ -71,21 +67,16 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
 
   const [baseRisk, setBaseRisk] = useState<RiskAssessment>(getBaseRisk());
   const [modifiers, setModifiers] = useState<ScenarioModifiers>(initialModifiers);
-  const [modifiedRisk, setModifiedRisk] = useState<RiskAssessment>(baseRisk);
+  const [modifiedRisk, setModifiedRisk] = useState<RiskAssessment>({...baseRisk});
 
-  // Update base risk when view mode or projection year changes
   useEffect(() => {
     const newBaseRisk = getBaseRisk();
     setBaseRisk(newBaseRisk);
-    // Always set modified risk to match base risk initially
     setModifiedRisk({...newBaseRisk});
-    // Reset modifiers as well when the view mode or projection year changes
     setModifiers(initialModifiers);
   }, [viewMode, projectionYear, division]);
 
-  // Recalculate risk when modifiers change
   useEffect(() => {
-    // Calculate new risk whenever modifiers change
     const newRisk = calculateScenarioRisk(baseRisk, modifiers);
     setModifiedRisk(newRisk);
   }, [modifiers, baseRisk]);
@@ -99,7 +90,6 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
 
   const resetModifiers = () => {
     setModifiers(initialModifiers);
-    // Reset modified risk to match base risk
     setModifiedRisk({...baseRisk});
     toast({
       title: "Scenario Reset",
@@ -147,7 +137,6 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
       </CardHeader>
       
       <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Sliders for adjusting factors */}
         <div className="space-y-5">
           <h3 className="text-lg font-medium">Mitigation Factors</h3>
           <p className="text-sm text-muted-foreground mb-4">Adjust these factors to see how they could impact the division's risk score.</p>
@@ -235,7 +224,6 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
           </div>
         </div>
 
-        {/* Risk Impact Analysis */}
         <div className="space-y-5">
           <h3 className="text-lg font-medium">Impact Analysis</h3>
           <p className="text-sm text-muted-foreground mb-4">See how your adjustments affect the division's risk assessment.</p>
