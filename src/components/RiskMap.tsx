@@ -15,6 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 
 interface RiskMapProps {
   divisions: ElectoralDivision[];
@@ -32,7 +33,9 @@ const RiskMap: React.FC<RiskMapProps> = ({
   const [showDivisionList, setShowDivisionList] = useState(true);
   const [selectedMap, setSelectedMap] = useState("map1");
   const [animateIn, setAnimateIn] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { toast } = useToast();
 
   // Map URLs with updated descriptive labels
   const mapUrls = {
@@ -56,21 +59,43 @@ const RiskMap: React.FC<RiskMapProps> = ({
     // Debug logging for map loading
     console.log("Map URLs:", mapUrls);
     console.log(`Current selected map: ${selectedMap} - URL: ${mapUrls[selectedMap as keyof typeof mapUrls]}`);
-    
-    // Check iframe after a delay
-    setTimeout(() => {
-      if (iframeRef.current) {
-        console.log(`Iframe src: ${iframeRef.current.src}`);
-        console.log(`Iframe loaded status: ${iframeRef.current.contentWindow !== null}`);
-      } else {
-        console.log("Iframe ref not available");
-      }
-    }, 1000);
-  }, [selectedMap]);
-
+  }, []);
+  
+  // Handle map change with loading indicator
   const handleMapChange = (mapKey: string) => {
     console.log(`Changing map to: ${mapKey}`);
+    setMapLoaded(false);
     setSelectedMap(mapKey);
+    
+    // Show loading toast
+    toast({
+      title: "Loading map",
+      description: `Loading ${mapLabels[mapKey as keyof typeof mapLabels]}...`,
+      duration: 2000,
+    });
+  };
+  
+  // Handle map load event
+  const handleMapLoad = () => {
+    setMapLoaded(true);
+    console.log(`Map ${selectedMap} loaded`);
+    
+    toast({
+      title: "Map loaded",
+      description: `${mapLabels[selectedMap as keyof typeof mapLabels]} map loaded successfully.`,
+      duration: 2000,
+    });
+  };
+  
+  // Handle map error
+  const handleMapError = () => {
+    console.error(`Map ${selectedMap} failed to load`);
+    toast({
+      title: "Map error",
+      description: "There was an issue loading the map. Please try another one.",
+      variant: "destructive",
+      duration: 3000,
+    });
   };
 
   return (
@@ -156,17 +181,25 @@ const RiskMap: React.FC<RiskMapProps> = ({
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-[400px]">
-          {/* Map visualization - simplified for better loading */}
+          {/* Map visualization - improved for better loading */}
           <div className="lg:col-span-2 relative h-full border border-gray-700/60 rounded-lg bg-gray-800 shadow-inner overflow-hidden">
+            {!mapLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center z-10 bg-gray-800/80 backdrop-blur-sm">
+                <div className="flex flex-col items-center">
+                  <div className="animate-spin w-8 h-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full mb-3"></div>
+                  <p className="text-blue-300">Loading map...</p>
+                </div>
+              </div>
+            )}
             <iframe 
               ref={iframeRef}
               src={mapUrls[selectedMap as keyof typeof mapUrls]} 
-              className="w-full h-full border-0"
+              className={`w-full h-full border-0 transition-opacity duration-300 ${mapLoaded ? 'opacity-100' : 'opacity-30'}`}
               title={mapLabels[selectedMap as keyof typeof mapLabels]}
               sandbox="allow-scripts allow-same-origin"
               loading="eager"
-              onLoad={() => console.log(`Map ${selectedMap} loaded`)}
-              onError={(e) => console.error(`Map ${selectedMap} failed to load`, e)}
+              onLoad={handleMapLoad}
+              onError={handleMapError}
             />
           </div>
           
