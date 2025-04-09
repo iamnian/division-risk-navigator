@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import RiskMap from "@/components/RiskMap";
@@ -200,54 +201,58 @@ const Index = () => {
                     <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Selected Division: {selectedDivision.name}</h2>
                     <span className="text-sm text-gray-500 dark:text-gray-400">{selectedDivision.county}</span>
                   </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      variant={viewMode === 'current' ? 'default' : 'outline'} 
-                      onClick={() => setViewMode('current')}
-                      className="gap-2 transition-all"
-                      size="sm"
-                    >
-                      <Clock size={16} />
-                      Current
-                    </Button>
-                    
-                    <div className="flex items-center gap-2">
+                  <div className="flex relative">
+                    <div className="flex gap-2">
                       <Button 
-                        variant={viewMode === 'future' ? 'default' : 'outline'} 
-                        onClick={() => setViewMode('future')}
+                        variant={viewMode === 'current' ? 'default' : 'outline'} 
+                        onClick={() => setViewMode('current')}
                         className="gap-2 transition-all"
                         size="sm"
                       >
-                        <TrendingUp size={16} />
-                        Future
+                        <Clock size={16} />
+                        Current
                       </Button>
                       
-                      {viewMode === 'future' && (
-                        <Select
-                          value={projectionYear}
-                          onValueChange={(year) => {
-                            setProjectionYear(year);
-                            toast({
-                              title: "Projection year changed",
-                              description: `Now showing projections for ${year}`,
-                            });
-                          }}
+                      <div className="flex items-center relative">
+                        <Button 
+                          variant={viewMode === 'future' ? 'default' : 'outline'} 
+                          onClick={() => setViewMode('future')}
+                          className="gap-2 transition-all"
+                          size="sm"
                         >
-                          <SelectTrigger className="w-24 h-9 border-blue-100 bg-blue-50 text-blue-900 text-xs dark:bg-blue-900 dark:border-blue-800 dark:text-blue-100">
-                            <div className="flex items-center gap-1.5">
-                              <CalendarIcon size={14} />
-                              <SelectValue placeholder="Year" />
-                            </div>
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="2025">2025</SelectItem>
-                            <SelectItem value="2030">2030</SelectItem>
-                            <SelectItem value="2035">2035</SelectItem>
-                            <SelectItem value="2040">2040</SelectItem>
-                            <SelectItem value="2050">2050</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
+                          <TrendingUp size={16} />
+                          Future
+                        </Button>
+                        
+                        {viewMode === 'future' && (
+                          <div className="absolute right-0 top-full mt-1 z-50">
+                            <Select
+                              value={projectionYear}
+                              onValueChange={(year) => {
+                                setProjectionYear(year);
+                                toast({
+                                  title: "Projection year changed",
+                                  description: `Now showing projections for ${year}`,
+                                });
+                              }}
+                            >
+                              <SelectTrigger className="w-24 h-9 border-blue-100 bg-blue-50 text-blue-900 text-xs dark:bg-blue-900 dark:border-blue-800 dark:text-blue-100">
+                                <div className="flex items-center gap-1.5">
+                                  <CalendarIcon size={14} />
+                                  <SelectValue placeholder="Year" />
+                                </div>
+                              </SelectTrigger>
+                              <SelectContent className="bg-white dark:bg-gray-800 border dark:border-gray-700">
+                                <SelectItem value="2025">2025</SelectItem>
+                                <SelectItem value="2030">2030</SelectItem>
+                                <SelectItem value="2035">2035</SelectItem>
+                                <SelectItem value="2040">2040</SelectItem>
+                                <SelectItem value="2050">2050</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
