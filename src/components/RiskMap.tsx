@@ -57,7 +57,7 @@ const RiskMap: React.FC<RiskMapProps> = ({
       const iframes = document.querySelectorAll('iframe');
       console.log(`Found ${iframes.length} iframes`);
       iframes.forEach((iframe, index) => {
-        console.log(`Iframe ${index} src: ${iframe.src}, loaded: ${iframe.complete}`);
+        console.log(`Iframe ${index} src: ${iframe.src}, loaded: ${iframe.contentWindow !== null}`);
       });
     };
     
