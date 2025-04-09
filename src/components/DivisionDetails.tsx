@@ -26,6 +26,7 @@ const DivisionDetails: React.FC<DivisionDetailsProps> = ({
     { name: "Hospital Stress", value: risk.factors.hospitalStress, fill: "#fb7185" },
     { name: "Isolation Score", value: risk.factors.isolationScore, fill: "#60a5fa" },
     { name: "Walkability", value: risk.factors.walkability, fill: "#fbbf24" },
+    { name: "Environmental Score", value: risk.factors.environmentalScore, fill: "#34d399" },
   ];
 
   // Create data for comparison between current and future
@@ -36,6 +37,7 @@ const DivisionDetails: React.FC<DivisionDetailsProps> = ({
       "Hospital Stress": division.currentRisk.factors.hospitalStress,
       "Isolation Score": division.currentRisk.factors.isolationScore,
       "Walkability": division.currentRisk.factors.walkability,
+      "Environmental Score": division.currentRisk.factors.environmentalScore,
     },
     { 
       name: "Future",
@@ -43,6 +45,7 @@ const DivisionDetails: React.FC<DivisionDetailsProps> = ({
       "Hospital Stress": division.futureRisk.factors.hospitalStress,
       "Isolation Score": division.futureRisk.factors.isolationScore,
       "Walkability": division.futureRisk.factors.walkability,
+      "Environmental Score": division.futureRisk.factors.environmentalScore,
     },
   ];
 
@@ -135,6 +138,19 @@ const DivisionDetails: React.FC<DivisionDetailsProps> = ({
                   ></div>
                 </div>
               </div>
+
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm">Environmental Score</span>
+                  <span className="text-sm font-medium">{risk.factors.environmentalScore}%</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full">
+                  <div 
+                    className="h-full bg-emerald-500 rounded-full" 
+                    style={{ width: `${risk.factors.environmentalScore}%` }}
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -171,6 +187,7 @@ const DivisionDetails: React.FC<DivisionDetailsProps> = ({
                   <Line type="monotone" dataKey="Hospital Stress" stroke="#fb7185" />
                   <Line type="monotone" dataKey="Isolation Score" stroke="#60a5fa" />
                   <Line type="monotone" dataKey="Walkability" stroke="#fbbf24" />
+                  <Line type="monotone" dataKey="Environmental Score" stroke="#34d399" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
