@@ -218,7 +218,6 @@ export const divisions: ElectoralDivision[] = [
       }
     }
   },
-  // Adding more electoral divisions
   {
     id: "waterford",
     name: "Waterford",
@@ -297,6 +296,115 @@ export const divisions: ElectoralDivision[] = [
         isolationScore: 65,
         walkability: 48,
         environmentalScore: 57
+      }
+    }
+  },
+  // Adding more electoral divisions
+  {
+    id: "clare",
+    name: "Clare",
+    county: "Clare",
+    population: 76000,
+    coordinates: [52.9112, -8.9194],
+    currentRisk: {
+      overall: 47,
+      factors: {
+        dependencyRatio: 45,
+        hospitalStress: 42,
+        isolationScore: 53,
+        walkability: 49,
+        environmentalScore: 40
+      }
+    },
+    futureRisk: {
+      overall: 56,
+      factors: {
+        dependencyRatio: 52,
+        hospitalStress: 48,
+        isolationScore: 61,
+        walkability: 45,
+        environmentalScore: 47
+      }
+    }
+  },
+  {
+    id: "laois-offaly",
+    name: "Laois-Offaly",
+    county: "Laois",
+    population: 84000,
+    coordinates: [53.0329, -7.3021],
+    currentRisk: {
+      overall: 45,
+      factors: {
+        dependencyRatio: 40,
+        hospitalStress: 43,
+        isolationScore: 50,
+        walkability: 47,
+        environmentalScore: 42
+      }
+    },
+    futureRisk: {
+      overall: 53,
+      factors: {
+        dependencyRatio: 46,
+        hospitalStress: 51,
+        isolationScore: 56,
+        walkability: 42,
+        environmentalScore: 51
+      }
+    }
+  },
+  {
+    id: "kilkenny",
+    name: "Kilkenny",
+    county: "Kilkenny",
+    population: 64000,
+    coordinates: [52.6477, -7.2561],
+    currentRisk: {
+      overall: 39,
+      factors: {
+        dependencyRatio: 37,
+        hospitalStress: 41,
+        isolationScore: 45,
+        walkability: 54,
+        environmentalScore: 32
+      }
+    },
+    futureRisk: {
+      overall: 48,
+      factors: {
+        dependencyRatio: 44,
+        hospitalStress: 48,
+        isolationScore: 52,
+        walkability: 50,
+        environmentalScore: 39
+      }
+    }
+  },
+  {
+    id: "tipperary",
+    name: "Tipperary",
+    county: "Tipperary",
+    population: 81000,
+    coordinates: [52.4738, -8.1565],
+    currentRisk: {
+      overall: 56,
+      factors: {
+        dependencyRatio: 51,
+        hospitalStress: 47,
+        isolationScore: 63,
+        walkability: 41,
+        environmentalScore: 55
+      }
+    },
+    futureRisk: {
+      overall: 65,
+      factors: {
+        dependencyRatio: 58,
+        hospitalStress: 54,
+        isolationScore: 70,
+        walkability: 38,
+        environmentalScore: 61
       }
     }
   }

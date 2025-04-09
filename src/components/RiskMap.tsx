@@ -50,6 +50,20 @@ const RiskMap: React.FC<RiskMapProps> = ({
   // Add animation effect on component mount
   useEffect(() => {
     setAnimateIn(true);
+    
+    // Log to debug iframe loading
+    console.log("Map URLs:", mapUrls);
+    
+    // Check if iframes are loading correctly
+    const checkIframes = () => {
+      const iframes = document.querySelectorAll('iframe');
+      iframes.forEach(iframe => {
+        console.log(`Iframe src: ${iframe.src}, loaded: ${!iframe.contentDocument?.body.innerHTML.includes('error')}`);
+      });
+    };
+    
+    // Allow some time for iframes to load
+    setTimeout(checkIframes, 2000);
   }, []);
 
   return (
@@ -124,16 +138,20 @@ const RiskMap: React.FC<RiskMapProps> = ({
           </TabsList>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-[400px]">
-            {/* Map visualization - pristine state without blurry effects */}
+            {/* Map visualization - ensure all maps are properly loaded */}
             <div className="lg:col-span-2 relative h-full border border-gray-700/60 rounded-lg bg-gray-800 shadow-inner overflow-hidden">
               {Object.keys(mapUrls).map((mapKey) => (
                 <TabsContent key={mapKey} value={mapKey} className="h-full flex flex-col">
+                  {/* Fix: Add a key to force iframe reload and ensure proper src path */}
                   <iframe 
+                    key={`${mapKey}-${viewMode}`}
                     src={mapUrls[mapKey as keyof typeof mapUrls]} 
                     className="w-full h-full border-0"
                     title={mapLabels[mapKey as keyof typeof mapLabels]}
                     sandbox="allow-scripts allow-same-origin"
-                    loading="lazy"
+                    loading="eager"
+                    onLoad={(e) => console.log(`Map ${mapKey} loaded`)}
+                    onError={(e) => console.error(`Map ${mapKey} failed to load`, e)}
                   />
                   
                   {/* Data visualization panel below map */}
