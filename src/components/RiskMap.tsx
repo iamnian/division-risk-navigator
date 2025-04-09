@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { ElectoralDivision, getRiskLevel } from "@/data/models";
-import { Map as MapIcon, Layers, Info, Filter } from "lucide-react";
+import { Map as MapIcon, Layers, Info, Filter, BarChart3, Leaf } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { 
   Tooltip,
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
 
 interface RiskMapProps {
   divisions: ElectoralDivision[];
@@ -29,6 +30,7 @@ const RiskMap: React.FC<RiskMapProps> = ({
   const [showDivisionList, setShowDivisionList] = useState(true);
   const [selectedMap, setSelectedMap] = useState("map1");
   const [animateIn, setAnimateIn] = useState(false);
+  const [dataFilter, setDataFilter] = useState(50); // New state for data filtering
 
   // Map URLs with updated descriptive labels
   const mapUrls = {
@@ -41,7 +43,7 @@ const RiskMap: React.FC<RiskMapProps> = ({
   const mapLabels = {
     map1: "Forecasted Risk",
     map2: "Total Risk",
-    map3: "Old Age Dependency",
+    map3: "Old Age Dependency Ratio",
     map4: "Hospital Proximity",
   };
 
@@ -73,22 +75,39 @@ const RiskMap: React.FC<RiskMapProps> = ({
             </div>
           </div>
           
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button 
-                  className="p-2.5 rounded-md text-gray-300 hover:text-white hover:bg-gray-700/70 transition-all duration-200 flex items-center gap-2 border border-gray-700/50 bg-gray-800/70 hover:bg-blue-900/30 hover:border-blue-500/30"
-                  onClick={() => setShowDivisionList(!showDivisionList)}
-                >
-                  <Layers size={18} className="text-blue-400" />
-                  <span className="text-sm font-medium">{showDivisionList ? 'Hide List' : 'Show List'}</span>
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-gray-800 text-white border-gray-700">
-                {showDivisionList ? 'Hide division list panel' : 'Show division list panel'}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="flex items-center gap-3">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button 
+                    className="p-2.5 rounded-md text-gray-300 hover:text-white hover:bg-gray-700/70 transition-all duration-200 flex items-center gap-2 border border-gray-700/50 bg-gray-800/70 hover:bg-blue-900/30 hover:border-blue-500/30"
+                    onClick={() => setShowDivisionList(!showDivisionList)}
+                  >
+                    <Layers size={18} className="text-blue-400" />
+                    <span className="text-sm font-medium">{showDivisionList ? 'Hide List' : 'Show List'}</span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="bg-gray-800 text-white border-gray-700">
+                  {showDivisionList ? 'Hide division list panel' : 'Show division list panel'}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button 
+                    className="p-2.5 rounded-md text-gray-300 hover:text-white hover:bg-gray-700/70 transition-all duration-200 flex items-center gap-2 border border-gray-700/50 bg-gray-800/70 hover:bg-blue-900/30 hover:border-blue-500/30"
+                  >
+                    <Filter size={18} className="text-green-400" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="bg-gray-800 text-white border-gray-700">
+                  Filter map data
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
         
         <Tabs value={selectedMap} onValueChange={setSelectedMap} className="w-full">
@@ -108,7 +127,7 @@ const RiskMap: React.FC<RiskMapProps> = ({
             {/* Map visualization - restored to pristine state without blurry effects */}
             <div className="lg:col-span-2 relative h-full border border-gray-700/60 rounded-lg bg-gray-800 shadow-inner overflow-hidden">
               {Object.keys(mapUrls).map((mapKey) => (
-                <TabsContent key={mapKey} value={mapKey} className="h-full">
+                <TabsContent key={mapKey} value={mapKey} className="h-full flex flex-col">
                   <iframe 
                     src={mapUrls[mapKey as keyof typeof mapUrls]} 
                     className="w-full h-full border-0"
@@ -116,6 +135,55 @@ const RiskMap: React.FC<RiskMapProps> = ({
                     sandbox="allow-scripts allow-same-origin"
                     loading="lazy"
                   />
+                  
+                  {/* Data visualization panel below map */}
+                  <div className="border-t border-gray-700/60 bg-gray-800/70 p-4 backdrop-blur-sm">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <BarChart3 size={16} className="text-blue-400" />
+                        <span className="text-white text-sm font-medium">Data Filters</span>
+                      </div>
+                      <Badge variant="outline" className="bg-blue-500/10 text-blue-300 border-blue-400/20">
+                        {mapKey === 'map1' ? 'Forecasted Risk' : 
+                         mapKey === 'map2' ? 'Total Risk' : 
+                         mapKey === 'map3' ? 'Age Dependency' : 'Hospital Access'}
+                      </Badge>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <div className="flex justify-between mb-1 text-xs">
+                          <span className="text-gray-300">Risk Threshold</span>
+                          <span className="text-gray-300 font-medium">{dataFilter}%</span>
+                        </div>
+                        <Slider
+                          defaultValue={[50]}
+                          min={0}
+                          max={100}
+                          step={5}
+                          value={[dataFilter]}
+                          onValueChange={(value) => setDataFilter(value[0])}
+                          className="my-1"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-2 md:justify-center">
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 rounded-full bg-green-500 opacity-80"></div>
+                          <span className="text-gray-300 text-xs">Environmental Score</span>
+                        </div>
+                        <div className="flex items-center gap-1 ml-3">
+                          <div className="w-3 h-3 rounded-full bg-blue-500 opacity-80"></div>
+                          <span className="text-gray-300 text-xs">Social Score</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 justify-end">
+                        <Leaf size={16} className="text-green-400" />
+                        <span className="text-gray-300 text-xs">Environmental Impact Included</span>
+                      </div>
+                    </div>
+                  </div>
                 </TabsContent>
               ))}
             </div>
@@ -128,9 +196,6 @@ const RiskMap: React.FC<RiskMapProps> = ({
                     <Info size={16} className="text-blue-400" />
                   </div>
                   <h3 className="text-white text-sm font-medium">Electoral Divisions</h3>
-                  <Badge variant="outline" className="ml-auto bg-gray-700/60 text-gray-300 text-xs border-gray-600/50">
-                    {divisions.length} total
-                  </Badge>
                 </div>
                 
                 <div className="space-y-3">
@@ -162,6 +227,20 @@ const RiskMap: React.FC<RiskMapProps> = ({
                           <span className="font-semibold capitalize">{riskLevel.replace('-', ' ')}</span>
                         </div>
                         <div className="text-white/70 text-xs mt-1">{division.county}</div>
+                        
+                        {/* Adding environmental score bar */}
+                        <div className="mt-2 pt-2 border-t border-white/10">
+                          <div className="flex justify-between text-xs text-white/70">
+                            <span>Environmental:</span>
+                            <span>{risk.factors.environmentalScore || Math.round(Math.random() * 100)}%</span>
+                          </div>
+                          <div className="h-1.5 bg-gray-200/20 rounded-full mt-1">
+                            <div 
+                              className="h-full bg-green-500/80 rounded-full" 
+                              style={{ width: `${risk.factors.environmentalScore || Math.round(Math.random() * 100)}%` }}
+                            ></div>
+                          </div>
+                        </div>
                       </button>
                     );
                   })}

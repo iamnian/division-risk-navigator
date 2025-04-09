@@ -6,6 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { ElectoralDivision, getRiskLevel } from "@/data/models";
 import { ScenarioModifiers } from "@/data/models";
 import { calculateScenarioRisk } from "@/utils/riskCalculator";
+import { Leaf } from "lucide-react";
 
 interface ScenarioPlannerProps {
   division: ElectoralDivision;
@@ -23,6 +24,7 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
     hospitalStressChange: 0,
     isolationScoreChange: 0,
     walkabilityChange: 0,
+    environmentalScoreChange: 0,
   });
   
   // Calculate the modified risk based on the current modifiers
@@ -48,13 +50,19 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
       hospitalStressChange: 0,
       isolationScoreChange: 0,
       walkabilityChange: 0,
+      environmentalScoreChange: 0,
     });
   };
   
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Scenario Planner</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          Scenario Planner
+          <span className="text-sm font-normal text-muted-foreground ml-2">
+            Adjust factors to see impact on risk assessment
+          </span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -139,6 +147,29 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
                 step={5}
                 value={[modifiers.walkabilityChange]}
                 onValueChange={(value) => handleModifierChange('walkabilityChange', value)}
+                className="my-2"
+              />
+            </div>
+            
+            {/* New Environmental Score slider */}
+            <div>
+              <div className="flex justify-between mb-2">
+                <label className="text-sm font-medium flex items-center gap-1.5">
+                  <Leaf size={16} className="text-green-500" />
+                  Environmental Score
+                </label>
+                <span className={modifiers.environmentalScoreChange > 0 ? "text-red-500" : 
+                          modifiers.environmentalScoreChange < 0 ? "text-green-500" : ""}>
+                  {modifiers.environmentalScoreChange > 0 ? "+" : ""}{modifiers.environmentalScoreChange}%
+                </span>
+              </div>
+              <Slider
+                defaultValue={[0]}
+                min={-50}
+                max={50}
+                step={5}
+                value={[modifiers.environmentalScoreChange]}
+                onValueChange={(value) => handleModifierChange('environmentalScoreChange', value)}
                 className="my-2"
               />
             </div>
@@ -229,6 +260,25 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
                     <div 
                       className="h-full bg-amber-500 rounded-full" 
                       style={{ width: `${modifiedRisk.factors.walkability}%` }}
+                    ></div>
+                  </div>
+                </div>
+                
+                {/* New Environmental Score bar */}
+                <div>
+                  <div className="flex justify-between text-sm">
+                    <span className="flex items-center gap-1">
+                      <Leaf size={14} className="text-green-500" />
+                      Environmental Score
+                    </span>
+                    <span>
+                      {baseRisk.factors.environmentalScore || 50}% → {modifiedRisk.factors.environmentalScore}%
+                    </span>
+                  </div>
+                  <div className="h-2 bg-gray-200 rounded-full mt-1">
+                    <div 
+                      className="h-full bg-green-500 rounded-full" 
+                      style={{ width: `${modifiedRisk.factors.environmentalScore}%` }}
                     ></div>
                   </div>
                 </div>

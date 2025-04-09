@@ -19,6 +19,7 @@ export interface RiskFactors {
   hospitalStress: number; // 0-100
   isolationScore: number; // 0-100
   walkability: number; // 0-100
+  environmentalScore: number; // 0-100 (New factor)
 }
 
 export type RiskLevel = 'low' | 'medium' | 'high' | 'very-high';
@@ -28,6 +29,7 @@ export interface ScenarioModifiers {
   hospitalStressChange: number; // -100 to 100
   isolationScoreChange: number; // -100 to 100
   walkabilityChange: number; // -100 to 100
+  environmentalScoreChange: number; // -100 to 100 (New modifier)
 }
 
 export function getRiskLevel(score: number): RiskLevel {
