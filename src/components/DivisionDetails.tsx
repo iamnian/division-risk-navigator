@@ -9,16 +9,57 @@ import { Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Line, ResponsiveCont
 interface DivisionDetailsProps {
   division: ElectoralDivision;
   viewMode: 'current' | 'future';
+  projectionYear?: string;
   onViewModeChange: (mode: 'current' | 'future') => void;
 }
 
 const DivisionDetails: React.FC<DivisionDetailsProps> = ({
   division,
   viewMode,
+  projectionYear = "2030",
   onViewModeChange,
 }) => {
-  const risk = viewMode === 'current' ? division.currentRisk : division.futureRisk;
+  // Use projection year to calculate adjusted risk
+  const risk = React.useMemo(() => {
+    if (viewMode === 'current') {
+      return division.currentRisk;
+    }
+    
+    // Generate dynamic future risk data based on projection year
+    const baseRisk = division.futureRisk;
+    const yearFactor = getYearFactor(projectionYear);
+    
+    return {
+      overall: Math.min(100, Math.round(baseRisk.overall * yearFactor)),
+      factors: {
+        dependencyRatio: Math.min(100, Math.round(baseRisk.factors.dependencyRatio * yearFactor)),
+        hospitalStress: Math.min(100, Math.round(baseRisk.factors.hospitalStress * (yearFactor * 0.9))),
+        isolationScore: Math.min(100, Math.round(baseRisk.factors.isolationScore * (yearFactor * 1.1))),
+        walkability: Math.min(100, Math.round(baseRisk.factors.walkability * (yearFactor * 0.95))),
+        environmentalScore: Math.min(100, Math.round(baseRisk.factors.environmentalScore * (yearFactor * 1.2))),
+      }
+    };
+  }, [division, viewMode, projectionYear]);
+
   const riskLevel = getRiskLevel(risk.overall);
+
+  // Function to calculate a factor based on the selected year
+  function getYearFactor(year: string): number {
+    switch (year) {
+      case "2025":
+        return 1.05;
+      case "2030":
+        return 1.15;
+      case "2035":
+        return 1.25;
+      case "2040":
+        return 1.35;
+      case "2050":
+        return 1.5;
+      default:
+        return 1.15; // Default to 2030 factor
+    }
+  }
 
   // Create data for the factor comparison chart
   const factorData = [
@@ -40,12 +81,12 @@ const DivisionDetails: React.FC<DivisionDetailsProps> = ({
       "Environmental Score": division.currentRisk.factors.environmentalScore,
     },
     { 
-      name: "Future",
-      "Dependency Ratio": division.futureRisk.factors.dependencyRatio,
-      "Hospital Stress": division.futureRisk.factors.hospitalStress,
-      "Isolation Score": division.futureRisk.factors.isolationScore,
-      "Walkability": division.futureRisk.factors.walkability,
-      "Environmental Score": division.futureRisk.factors.environmentalScore,
+      name: viewMode === 'future' ? projectionYear : 'Future',
+      "Dependency Ratio": risk.factors.dependencyRatio,
+      "Hospital Stress": risk.factors.hospitalStress,
+      "Isolation Score": risk.factors.isolationScore,
+      "Walkability": risk.factors.walkability,
+      "Environmental Score": risk.factors.environmentalScore,
     },
   ];
 
@@ -56,6 +97,11 @@ const DivisionDetails: React.FC<DivisionDetailsProps> = ({
           <div>
             <CardTitle className="text-2xl">{division.name}</CardTitle>
             <p className="text-muted-foreground">{division.county} • Population: {division.population.toLocaleString()}</p>
+            {viewMode === 'future' && 
+              <p className="text-sm text-blue-600 font-medium mt-1">
+                Projection for {projectionYear}
+              </p>
+            }
           </div>
           
           <Tabs value={viewMode} onValueChange={onViewModeChange}>
@@ -171,7 +217,7 @@ const DivisionDetails: React.FC<DivisionDetailsProps> = ({
               </ResponsiveContainer>
             </div>
 
-            <h3 className="text-lg font-medium mt-6 mb-2">Current vs. Future</h3>
+            <h3 className="text-lg font-medium mt-6 mb-2">Current vs. {viewMode === 'future' ? projectionYear : 'Future'}</h3>
             <div className="h-[200px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart

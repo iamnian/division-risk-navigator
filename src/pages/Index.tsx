@@ -160,12 +160,14 @@ const Index = () => {
                 <DivisionDetails 
                   division={selectedDivision} 
                   viewMode={viewMode}
+                  projectionYear={projectionYear}
                   onViewModeChange={setViewMode}
                 />
                 
                 <ScenarioPlanner 
                   division={selectedDivision}
-                  viewMode={viewMode} 
+                  viewMode={viewMode}
+                  projectionYear={projectionYear}
                 />
               </div>
             </>
