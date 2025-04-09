@@ -17,7 +17,8 @@ export function calculateScenarioRisk(
   // Apply modifiers to each factor
   const modifiedFactors: RiskFactors = {
     dependencyRatio: applyModifier(baseRisk.factors.dependencyRatio, modifiers.dependencyRatioChange),
-    hospitalStress: applyModifier(baseRisk.factors.hospitalStress, modifiers.hospitalStressChange),
+    // Apply a 2.5x multiplier to hospital stress changes to make them more impactful
+    hospitalStress: applyModifier(baseRisk.factors.hospitalStress, modifiers.hospitalStressChange * 2.5),
     isolationScore: applyModifier(baseRisk.factors.isolationScore, modifiers.isolationScoreChange),
     walkability: applyModifier(baseRisk.factors.walkability, modifiers.walkabilityChange),
     environmentalScore: applyModifier(baseRisk.factors.environmentalScore || 50, modifiers.environmentalScoreChange || 0),
@@ -45,10 +46,11 @@ export function calculateOverallScore(factors: RiskFactors): number {
   // Different weights for different factors
   const weights = {
     dependencyRatio: 0.25,
-    hospitalStress: 0.25,
+    // Increase hospital stress weight to have more impact on overall score
+    hospitalStress: 0.35,
     isolationScore: 0.2,
-    walkability: 0.15,
-    environmentalScore: 0.15  // Added weight for environmental score
+    walkability: 0.1,
+    environmentalScore: 0.1  // Reduced weight to balance the increased hospital stress weight
   };
 
   // For walkability, a higher score is actually better, so we invert it
