@@ -70,22 +70,23 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
     environmentalScoreChange: 0,
   };
 
-  const [baseRisk] = useState<RiskAssessment>(getBaseRisk());
+  const [baseRisk, setBaseRisk] = useState<RiskAssessment>(getBaseRisk());
   const [modifiers, setModifiers] = useState<ScenarioModifiers>(initialModifiers);
   const [modifiedRisk, setModifiedRisk] = useState<RiskAssessment>(baseRisk);
 
-  // Recalculate risk when modifiers change
-  useEffect(() => {
-    const newRisk = calculateScenarioRisk(getBaseRisk(), modifiers);
-    setModifiedRisk(newRisk);
-  }, [modifiers, viewMode, projectionYear]);
-
-  // Update base risk when view mode changes
+  // Update base risk when view mode or projection year changes
   useEffect(() => {
     const newBaseRisk = getBaseRisk();
-    const newRisk = calculateScenarioRisk(newBaseRisk, modifiers);
+    setBaseRisk(newBaseRisk);
+    // Also reset the modified risk to match the new base risk initially
+    setModifiedRisk(newBaseRisk);
+  }, [viewMode, projectionYear, division]);
+
+  // Recalculate risk when modifiers change
+  useEffect(() => {
+    const newRisk = calculateScenarioRisk(baseRisk, modifiers);
     setModifiedRisk(newRisk);
-  }, [viewMode, projectionYear]);
+  }, [modifiers, baseRisk]);
 
   const handleModifierChange = (key: keyof ScenarioModifiers, value: number[]) => {
     setModifiers(prev => ({
@@ -96,6 +97,8 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
 
   const resetModifiers = () => {
     setModifiers(initialModifiers);
+    // Reset modified risk to match base risk
+    setModifiedRisk(baseRisk);
     toast({
       title: "Scenario Reset",
       description: "All modifiers have been reset to their default values.",
