@@ -26,6 +26,7 @@ export function calculateScenarioRisk(
 
 // Apply a percentage modifier to a value, keeping it within 0-100 range
 function applyModifier(value: number, modifierPercentage: number): number {
+  // Direct percentage change to ensure consistent behavior
   const change = value * (modifierPercentage / 100);
   const newValue = value + change;
   return Math.max(0, Math.min(100, newValue));

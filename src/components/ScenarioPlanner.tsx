@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,14 +85,9 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
 
   // Recalculate risk when modifiers change
   useEffect(() => {
-    // Only recalculate if modifiers have any non-zero values
-    if (Object.values(modifiers).some(value => value !== 0)) {
-      const newRisk = calculateScenarioRisk(baseRisk, modifiers);
-      setModifiedRisk(newRisk);
-    } else {
-      // If all modifiers are zero, modified risk equals base risk
-      setModifiedRisk({...baseRisk});
-    }
+    // Calculate new risk whenever modifiers change
+    const newRisk = calculateScenarioRisk(baseRisk, modifiers);
+    setModifiedRisk(newRisk);
   }, [modifiers, baseRisk]);
 
   const handleModifierChange = (key: keyof ScenarioModifiers, value: number[]) => {
@@ -106,7 +100,7 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
   const resetModifiers = () => {
     setModifiers(initialModifiers);
     // Reset modified risk to match base risk
-    setModifiedRisk(baseRisk);
+    setModifiedRisk({...baseRisk});
     toast({
       title: "Scenario Reset",
       description: "All modifiers have been reset to their default values.",
