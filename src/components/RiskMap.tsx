@@ -1,16 +1,20 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { ElectoralDivision, getRiskLevel } from "@/data/models";
-import { Map as MapIcon, Layers, Info, Filter } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { 
+import { Map as MapIcon, Layers, Info, Filter, ChevronDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 
 interface RiskMapProps {
   divisions: ElectoralDivision[];
@@ -25,10 +29,10 @@ const RiskMap: React.FC<RiskMapProps> = ({
   onSelectDivision,
   viewMode,
 }) => {
-  const mapContainerRef = useRef<HTMLDivElement>(null);
   const [showDivisionList, setShowDivisionList] = useState(true);
   const [selectedMap, setSelectedMap] = useState("map1");
   const [animateIn, setAnimateIn] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Map URLs with updated descriptive labels
   const mapUrls = {
@@ -51,18 +55,23 @@ const RiskMap: React.FC<RiskMapProps> = ({
     
     // Debug logging for map loading
     console.log("Map URLs:", mapUrls);
+    console.log(`Current selected map: ${selectedMap} - URL: ${mapUrls[selectedMap as keyof typeof mapUrls]}`);
     
-    // Log iframe loading status
-    const checkIframes = () => {
-      const iframes = document.querySelectorAll('iframe');
-      console.log(`Found ${iframes.length} iframes`);
-      iframes.forEach((iframe, index) => {
-        console.log(`Iframe ${index} src: ${iframe.src}, loaded: ${iframe.contentWindow !== null}`);
-      });
-    };
-    
-    setTimeout(checkIframes, 2000);
-  }, []);
+    // Check iframe after a delay
+    setTimeout(() => {
+      if (iframeRef.current) {
+        console.log(`Iframe src: ${iframeRef.current.src}`);
+        console.log(`Iframe loaded status: ${iframeRef.current.contentWindow !== null}`);
+      } else {
+        console.log("Iframe ref not available");
+      }
+    }, 1000);
+  }, [selectedMap]);
+
+  const handleMapChange = (mapKey: string) => {
+    console.log(`Changing map to: ${mapKey}`);
+    setSelectedMap(mapKey);
+  };
 
   return (
     <div 
@@ -122,85 +131,91 @@ const RiskMap: React.FC<RiskMapProps> = ({
           </div>
         </div>
         
-        <Tabs value={selectedMap} onValueChange={setSelectedMap} className="w-full">
-          <TabsList className="bg-gray-800/80 mb-5 p-1.5 backdrop-blur-sm border border-gray-700/50 rounded-lg w-full flex justify-between">
-            {Object.entries(mapLabels).map(([key, label]) => (
-              <TabsTrigger 
-                key={key} 
-                value={key} 
-                className="flex-1 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-200 font-medium py-2.5"
-              >
-                {label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-[400px]">
-            {/* Map visualization - simplified for better loading */}
-            <div className="lg:col-span-2 relative h-full border border-gray-700/60 rounded-lg bg-gray-800 shadow-inner overflow-hidden">
-              {Object.keys(mapUrls).map((mapKey) => (
-                <TabsContent key={mapKey} value={mapKey} className="h-full flex flex-col">
-                  <iframe 
-                    key={`${mapKey}-${viewMode}`}
-                    src={mapUrls[mapKey as keyof typeof mapUrls]} 
-                    className="w-full h-full border-0"
-                    title={mapLabels[mapKey as keyof typeof mapLabels]}
-                    sandbox="allow-scripts allow-same-origin"
-                    loading="eager"
-                    onLoad={() => console.log(`Map ${mapKey} loaded`)}
-                    onError={(e) => console.error(`Map ${mapKey} failed to load`, e)}
-                  />
-                </TabsContent>
-              ))}
-            </div>
-            
-            {/* Division list */}
-            {showDivisionList && (
-              <div className="h-full overflow-y-auto border border-gray-700/60 rounded-lg bg-gray-800/70 p-4 backdrop-blur-sm shadow-inner transition-all duration-300 animate-fade-in">
-                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-700/60">
-                  <div className="bg-blue-500/20 p-1.5 rounded">
-                    <Info size={16} className="text-blue-400" />
-                  </div>
-                  <h3 className="text-white text-sm font-medium">Electoral Divisions</h3>
-                </div>
-                
-                <div className="space-y-3">
-                  {divisions.map(division => {
-                    const risk = viewMode === 'current' ? division.currentRisk : division.futureRisk;
-                    const riskLevel = getRiskLevel(risk.overall);
-                    const isSelected = selectedDivision?.id === division.id;
-                    
-                    return (
-                      <button 
-                        key={division.id}
-                        className={`
-                          p-3.5 rounded-md text-left transition-all duration-300 w-full
-                          ${isSelected ? 'ring-2 ring-white/80 scale-[1.02] shadow-lg shadow-blue-900/30' : ''}
-                          bg-risk-${riskLevel} bg-opacity-80 hover:bg-opacity-95
-                          hover:translate-y-[-2px] hover:shadow-xl hover:shadow-blue-900/20
-                          backdrop-blur-sm flex flex-col gap-1.5
-                        `}
-                        onClick={() => onSelectDivision(division)}
-                      >
-                        <div className="text-white font-semibold text-base flex justify-between items-center">
-                          <span>{division.name}</span>
-                          <Badge className={`bg-risk-${riskLevel} text-white font-medium border-white/20`}>
-                            {risk.overall}/100
-                          </Badge>
-                        </div>
-                        <div className="text-white/80 text-sm flex justify-between items-center">
-                          <span>Risk Level:</span>
-                          <span className="font-semibold capitalize">{riskLevel.replace('-', ' ')}</span>
-                        </div>
-                        <div className="text-white/70 text-xs mt-1">{division.county}</div>
-                      </button>
-                    );
-                  })}
-                </div>
+        {/* Map Selection Dropdown */}
+        <div className="mb-5">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="w-full bg-gray-800/80 p-2.5 backdrop-blur-sm border border-gray-700/50 rounded-lg text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MapIcon size={16} className="text-blue-400" />
+                <span>{mapLabels[selectedMap as keyof typeof mapLabels]}</span>
               </div>
-            )}
+              <ChevronDown size={16} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-gray-800 border-gray-700 text-white">
+              {Object.entries(mapLabels).map(([key, label]) => (
+                <DropdownMenuItem 
+                  key={key} 
+                  onClick={() => handleMapChange(key)}
+                  className={`text-white hover:bg-gray-700 ${selectedMap === key ? 'bg-blue-900/30' : ''}`}
+                >
+                  {label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-[400px]">
+          {/* Map visualization - simplified for better loading */}
+          <div className="lg:col-span-2 relative h-full border border-gray-700/60 rounded-lg bg-gray-800 shadow-inner overflow-hidden">
+            <iframe 
+              ref={iframeRef}
+              src={mapUrls[selectedMap as keyof typeof mapUrls]} 
+              className="w-full h-full border-0"
+              title={mapLabels[selectedMap as keyof typeof mapLabels]}
+              sandbox="allow-scripts allow-same-origin"
+              loading="eager"
+              onLoad={() => console.log(`Map ${selectedMap} loaded`)}
+              onError={(e) => console.error(`Map ${selectedMap} failed to load`, e)}
+            />
           </div>
-        </Tabs>
+          
+          {/* Division list */}
+          {showDivisionList && (
+            <div className="h-full overflow-y-auto border border-gray-700/60 rounded-lg bg-gray-800/70 p-4 backdrop-blur-sm shadow-inner transition-all duration-300 animate-fade-in">
+              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-700/60">
+                <div className="bg-blue-500/20 p-1.5 rounded">
+                  <Info size={16} className="text-blue-400" />
+                </div>
+                <h3 className="text-white text-sm font-medium">Electoral Divisions</h3>
+              </div>
+              
+              <div className="space-y-3">
+                {divisions.map(division => {
+                  const risk = viewMode === 'current' ? division.currentRisk : division.futureRisk;
+                  const riskLevel = getRiskLevel(risk.overall);
+                  const isSelected = selectedDivision?.id === division.id;
+                  
+                  return (
+                    <button 
+                      key={division.id}
+                      className={`
+                        p-3.5 rounded-md text-left transition-all duration-300 w-full
+                        ${isSelected ? 'ring-2 ring-white/80 scale-[1.02] shadow-lg shadow-blue-900/30' : ''}
+                        bg-risk-${riskLevel} bg-opacity-80 hover:bg-opacity-95
+                        hover:translate-y-[-2px] hover:shadow-xl hover:shadow-blue-900/20
+                        backdrop-blur-sm flex flex-col gap-1.5
+                      `}
+                      onClick={() => onSelectDivision(division)}
+                    >
+                      <div className="text-white font-semibold text-base flex justify-between items-center">
+                        <span>{division.name}</span>
+                        <Badge className={`bg-risk-${riskLevel} text-white font-medium border-white/20`}>
+                          {risk.overall}/100
+                        </Badge>
+                      </div>
+                      <div className="text-white/80 text-sm flex justify-between items-center">
+                        <span>Risk Level:</span>
+                        <span className="font-semibold capitalize">{riskLevel.replace('-', ' ')}</span>
+                      </div>
+                      <div className="text-white/70 text-xs mt-1">{division.county}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       
       <div className="absolute bottom-5 right-5 flex gap-3 items-center p-2.5 bg-gray-800/90 backdrop-blur-sm rounded-lg border border-gray-700/60 shadow-lg animate-slide-in">
