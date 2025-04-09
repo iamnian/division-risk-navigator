@@ -78,8 +78,8 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
   useEffect(() => {
     const newBaseRisk = getBaseRisk();
     setBaseRisk(newBaseRisk);
-    // Also reset the modified risk to match the new base risk initially
-    setModifiedRisk(newBaseRisk);
+    // Always set modified risk to match base risk initially
+    setModifiedRisk({...newBaseRisk});
     // Reset modifiers as well when the view mode or projection year changes
     setModifiers(initialModifiers);
   }, [viewMode, projectionYear, division]);
@@ -92,7 +92,7 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
       setModifiedRisk(newRisk);
     } else {
       // If all modifiers are zero, modified risk equals base risk
-      setModifiedRisk(baseRisk);
+      setModifiedRisk({...baseRisk});
     }
   }, [modifiers, baseRisk]);
 

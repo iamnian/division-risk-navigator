@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import RiskMap from "@/components/RiskMap";
@@ -90,11 +89,11 @@ const Index = () => {
   useEffect(() => {
     setAnimateIn(true);
     
-    // Welcome toast
+    // Welcome toast with a slightly longer duration for presentation
     toast({
       title: "Welcome to Division Risk Navigator",
       description: "Interactive tool for electoral division risk assessment",
-      duration: 5000,
+      duration: 6000,
     });
   }, []);
 
