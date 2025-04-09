@@ -15,6 +15,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 58,
         isolationScore: 22,
         walkability: 75,
+        environmentalScore: 45
       }
     },
     futureRisk: {
@@ -24,6 +25,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 63,
         isolationScore: 30,
         walkability: 70,
+        environmentalScore: 55
       }
     }
   },
@@ -40,6 +42,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 48,
         isolationScore: 20,
         walkability: 65,
+        environmentalScore: 38
       }
     },
     futureRisk: {
@@ -49,6 +52,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 55,
         isolationScore: 28,
         walkability: 60,
+        environmentalScore: 48
       }
     }
   },
@@ -65,6 +69,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 62,
         isolationScore: 40,
         walkability: 65,
+        environmentalScore: 58
       }
     },
     futureRisk: {
@@ -74,6 +79,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 70,
         isolationScore: 52,
         walkability: 60,
+        environmentalScore: 72
       }
     }
   },
@@ -90,6 +96,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 52,
         isolationScore: 38,
         walkability: 58,
+        environmentalScore: 43
       }
     },
     futureRisk: {
@@ -99,6 +106,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 60,
         isolationScore: 45,
         walkability: 52,
+        environmentalScore: 55
       }
     }
   },
@@ -115,6 +123,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 68,
         isolationScore: 45,
         walkability: 60,
+        environmentalScore: 64
       }
     },
     futureRisk: {
@@ -124,6 +133,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 75,
         isolationScore: 55,
         walkability: 55,
+        environmentalScore: 76
       }
     }
   },
@@ -140,6 +150,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 75,
         isolationScore: 80,
         walkability: 45,
+        environmentalScore: 78
       }
     },
     futureRisk: {
@@ -149,6 +160,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 82,
         isolationScore: 85,
         walkability: 40,
+        environmentalScore: 85
       }
     }
   },
@@ -165,6 +177,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 55,
         isolationScore: 70,
         walkability: 42,
+        environmentalScore: 63
       }
     },
     futureRisk: {
@@ -174,6 +187,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 62,
         isolationScore: 75,
         walkability: 38,
+        environmentalScore: 68
       }
     }
   },
@@ -190,6 +204,7 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 50,
         isolationScore: 35,
         walkability: 52,
+        environmentalScore: 47
       }
     },
     futureRisk: {
@@ -199,9 +214,92 @@ export const divisions: ElectoralDivision[] = [
         hospitalStress: 58,
         isolationScore: 42,
         walkability: 48,
+        environmentalScore: 54
       }
     }
   },
+  // Adding more electoral divisions
+  {
+    id: "waterford",
+    name: "Waterford",
+    county: "Waterford",
+    population: 78000,
+    coordinates: [52.2593, -7.1128],
+    currentRisk: {
+      overall: 53,
+      factors: {
+        dependencyRatio: 50,
+        hospitalStress: 58,
+        isolationScore: 42,
+        walkability: 55,
+        environmentalScore: 51
+      }
+    },
+    futureRisk: {
+      overall: 62,
+      factors: {
+        dependencyRatio: 57,
+        hospitalStress: 65,
+        isolationScore: 49,
+        walkability: 50,
+        environmentalScore: 61
+      }
+    }
+  },
+  {
+    id: "sligo-leitrim",
+    name: "Sligo-Leitrim",
+    county: "Sligo",
+    population: 63000,
+    coordinates: [54.2766, -8.4761],
+    currentRisk: {
+      overall: 58,
+      factors: {
+        dependencyRatio: 54,
+        hospitalStress: 60,
+        isolationScore: 65,
+        walkability: 48,
+        environmentalScore: 45
+      }
+    },
+    futureRisk: {
+      overall: 67,
+      factors: {
+        dependencyRatio: 62,
+        hospitalStress: 68,
+        isolationScore: 72,
+        walkability: 45,
+        environmentalScore: 52
+      }
+    }
+  },
+  {
+    id: "wexford",
+    name: "Wexford",
+    county: "Wexford",
+    population: 70000,
+    coordinates: [52.3369, -6.4633],
+    currentRisk: {
+      overall: 51,
+      factors: {
+        dependencyRatio: 47,
+        hospitalStress: 54,
+        isolationScore: 58,
+        walkability: 52,
+        environmentalScore: 48
+      }
+    },
+    futureRisk: {
+      overall: 60,
+      factors: {
+        dependencyRatio: 55,
+        hospitalStress: 62,
+        isolationScore: 65,
+        walkability: 48,
+        environmentalScore: 57
+      }
+    }
+  }
 ];
 
 export function searchDivisions(query: string): ElectoralDivision[] {

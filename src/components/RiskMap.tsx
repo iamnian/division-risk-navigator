@@ -37,14 +37,14 @@ const RiskMap: React.FC<RiskMapProps> = ({
     map1: "/maps/map1.html", // Forecasted Risk
     map2: "/maps/map2.html", // Total Risk
     map3: "/maps/map3.html", // Old Age Dependency Ratio
-    map4: "/maps/map4.html", // Hospital Proximity Risk Scores
+    map4: "/maps/map4.html", // Hospital Stress
   };
 
   const mapLabels = {
     map1: "Forecasted Risk",
     map2: "Total Risk",
     map3: "Old Age Dependency Ratio",
-    map4: "Hospital Proximity",
+    map4: "Hospital Stress",
   };
 
   // Add animation effect on component mount
@@ -124,7 +124,7 @@ const RiskMap: React.FC<RiskMapProps> = ({
           </TabsList>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-[400px]">
-            {/* Map visualization - restored to pristine state without blurry effects */}
+            {/* Map visualization - pristine state without blurry effects */}
             <div className="lg:col-span-2 relative h-full border border-gray-700/60 rounded-lg bg-gray-800 shadow-inner overflow-hidden">
               {Object.keys(mapUrls).map((mapKey) => (
                 <TabsContent key={mapKey} value={mapKey} className="h-full flex flex-col">
@@ -146,7 +146,7 @@ const RiskMap: React.FC<RiskMapProps> = ({
                       <Badge variant="outline" className="bg-blue-500/10 text-blue-300 border-blue-400/20">
                         {mapKey === 'map1' ? 'Forecasted Risk' : 
                          mapKey === 'map2' ? 'Total Risk' : 
-                         mapKey === 'map3' ? 'Age Dependency' : 'Hospital Access'}
+                         mapKey === 'map3' ? 'Age Dependency' : 'Hospital Stress'}
                       </Badge>
                     </div>
                     
@@ -228,16 +228,16 @@ const RiskMap: React.FC<RiskMapProps> = ({
                         </div>
                         <div className="text-white/70 text-xs mt-1">{division.county}</div>
                         
-                        {/* Adding environmental score bar */}
+                        {/* Environmental score bar */}
                         <div className="mt-2 pt-2 border-t border-white/10">
                           <div className="flex justify-between text-xs text-white/70">
                             <span>Environmental:</span>
-                            <span>{risk.factors.environmentalScore || Math.round(Math.random() * 100)}%</span>
+                            <span>{risk.factors.environmentalScore}%</span>
                           </div>
                           <div className="h-1.5 bg-gray-200/20 rounded-full mt-1">
                             <div 
                               className="h-full bg-green-500/80 rounded-full" 
-                              style={{ width: `${risk.factors.environmentalScore || Math.round(Math.random() * 100)}%` }}
+                              style={{ width: `${risk.factors.environmentalScore}%` }}
                             ></div>
                           </div>
                         </div>

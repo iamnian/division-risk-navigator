@@ -7,13 +7,21 @@ import ScenarioPlanner from "@/components/ScenarioPlanner";
 import SearchBar from "@/components/SearchBar";
 import { divisions, searchDivisions } from "@/data/mockData";
 import { ElectoralDivision } from "@/data/models";
-import { MapPin, TrendingUp, Clock } from "lucide-react";
+import { MapPin, TrendingUp, Clock, CalendarIcon } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Index = () => {
   const [selectedDivision, setSelectedDivision] = useState<ElectoralDivision | null>(divisions[0]);
   const [viewMode, setViewMode] = useState<'current' | 'future'>('current');
   const [filteredDivisions, setFilteredDivisions] = useState(divisions);
   const [animateIn, setAnimateIn] = useState(false);
+  const [projectionYear, setProjectionYear] = useState<string>("2030");
 
   // Handle search
   const handleSearch = (query: string) => {
@@ -79,15 +87,39 @@ const Index = () => {
                       <Clock size={16} />
                       Current
                     </Button>
-                    <Button 
-                      variant={viewMode === 'future' ? 'default' : 'outline'} 
-                      onClick={() => setViewMode('future')}
-                      className="gap-2 transition-all"
-                      size="sm"
-                    >
-                      <TrendingUp size={16} />
-                      Future
-                    </Button>
+                    
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        variant={viewMode === 'future' ? 'default' : 'outline'} 
+                        onClick={() => setViewMode('future')}
+                        className="gap-2 transition-all"
+                        size="sm"
+                      >
+                        <TrendingUp size={16} />
+                        Future
+                      </Button>
+                      
+                      {viewMode === 'future' && (
+                        <Select
+                          value={projectionYear}
+                          onValueChange={setProjectionYear}
+                        >
+                          <SelectTrigger className="w-24 h-9 border-blue-100 bg-blue-50 text-blue-900 text-xs">
+                            <div className="flex items-center gap-1.5">
+                              <CalendarIcon size={14} />
+                              <SelectValue placeholder="Year" />
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="2025">2025</SelectItem>
+                            <SelectItem value="2030">2030</SelectItem>
+                            <SelectItem value="2035">2035</SelectItem>
+                            <SelectItem value="2040">2040</SelectItem>
+                            <SelectItem value="2050">2050</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -114,7 +146,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto">
             <p className="text-gray-400 text-sm">
-              Risk scores are calculated based on Dependency Ratio, Hospital Stress, Isolation Score, and Walkability factors.
+              Risk scores are calculated based on Dependency Ratio, Hospital Stress, Isolation Score, Walkability, and Environmental factors.
             </p>
             <p className="text-gray-500 text-xs mt-3">
               Division Risk Navigator - SIS Proposal © {new Date().getFullYear()}
