@@ -7,7 +7,15 @@ import ScenarioPlanner from "@/components/ScenarioPlanner";
 import SearchBar from "@/components/SearchBar";
 import { divisions, searchDivisions } from "@/data/mockData";
 import { ElectoralDivision } from "@/data/models";
-import { MapPin, TrendingUp, Clock, CalendarIcon, GithubIcon } from "lucide-react";
+import {
+  MapPin,
+  TrendingUp,
+  Clock,
+  CalendarIcon,
+  GithubIcon,
+  Download,
+  HelpCircle,
+} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -16,6 +24,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import ThemeToggle from "@/components/ThemeToggle";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const Index = () => {
   const [selectedDivision, setSelectedDivision] = useState<ElectoralDivision | null>(divisions[0]);
@@ -47,6 +70,22 @@ const Index = () => {
     });
   };
 
+  // Mock export data function
+  const handleExportData = () => {
+    toast({
+      title: "Export started",
+      description: "Your data export is being prepared...",
+    });
+    
+    // Simulate export process
+    setTimeout(() => {
+      toast({
+        title: "Export complete",
+        description: "Risk assessment data has been exported.",
+      });
+    }, 1500);
+  };
+
   // Add animation effect on component mount
   useEffect(() => {
     setAnimateIn(true);
@@ -60,14 +99,14 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 dark:text-white transition-colors duration-300">
       {/* Header */}
-      <header className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-7 shadow-lg">
+      <header className="bg-gradient-to-r from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-950 text-white py-7 shadow-lg">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
             <div className={`transition-all duration-700 ${animateIn ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
               <div className="flex items-center gap-3">
-                <div className="bg-blue-500/20 p-2.5 rounded-lg">
+                <div className="bg-blue-500/20 p-2.5 rounded-lg animate-pulse-subtle">
                   <MapPin className="text-blue-400 h-7 w-7" />
                 </div>
                 <div>
@@ -76,16 +115,75 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <div className={`w-full md:w-72 transition-all duration-700 delay-300 ${animateIn ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
-              <SearchBar onSearch={handleSearch} />
+            
+            <div className="flex items-center gap-3">
+              <div className={`w-full md:w-72 transition-all duration-700 delay-300 ${animateIn ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
+                <SearchBar onSearch={handleSearch} />
+              </div>
+              <ThemeToggle />
             </div>
           </div>
         </div>
       </header>
 
+      {/* Breadcrumb */}
+      <div className="container mx-auto px-4 py-2 mt-2">
+        <Breadcrumb className="animate-fade-in">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="#">Risk Assessment</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{selectedDivision?.name || "Division"}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+
       {/* Main content */}
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 gap-7">
+          {/* Action bar */}
+          <div className="flex flex-wrap justify-between items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 animate-fade-in">
+            <div className="flex items-center gap-3">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="gap-2"
+                      onClick={handleExportData}
+                    >
+                      <Download size={16} />
+                      Export Data
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Download risk assessment data</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <HelpCircle size={18} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-sm">
+                    <p>Division Risk Navigator helps you assess and forecast risk levels for electoral divisions. Use the search bar to find divisions, toggle between current and future views, and explore scenario planning.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
+
           {/* Risk Map */}
           <RiskMap 
             divisions={filteredDivisions}
@@ -98,10 +196,10 @@ const Index = () => {
           {selectedDivision && (
             <>
               <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-500 ${animateIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                <div className="flex items-center justify-between bg-white p-5 rounded-xl shadow-md border border-gray-100">
+                <div className="flex items-center justify-between bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 transition-colors duration-300">
                   <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-bold text-gray-800">Selected Division: {selectedDivision.name}</h2>
-                    <span className="text-sm text-gray-500">{selectedDivision.county}</span>
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Selected Division: {selectedDivision.name}</h2>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{selectedDivision.county}</span>
                   </div>
                   <div className="flex gap-2">
                     <Button 
@@ -136,7 +234,7 @@ const Index = () => {
                             });
                           }}
                         >
-                          <SelectTrigger className="w-24 h-9 border-blue-100 bg-blue-50 text-blue-900 text-xs">
+                          <SelectTrigger className="w-24 h-9 border-blue-100 bg-blue-50 text-blue-900 text-xs dark:bg-blue-900 dark:border-blue-800 dark:text-blue-100">
                             <div className="flex items-center gap-1.5">
                               <CalendarIcon size={14} />
                               <SelectValue placeholder="Year" />
