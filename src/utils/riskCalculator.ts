@@ -6,6 +6,14 @@ export function calculateScenarioRisk(
   baseRisk: RiskAssessment,
   modifiers: ScenarioModifiers
 ): RiskAssessment {
+  // Check if all modifiers are zero
+  const allModifiersZero = Object.values(modifiers).every(val => val === 0);
+  
+  // If all modifiers are zero, return the base risk exactly as-is
+  if (allModifiersZero) {
+    return baseRisk;
+  }
+  
   // Apply modifiers to each factor
   const modifiedFactors: RiskFactors = {
     dependencyRatio: applyModifier(baseRisk.factors.dependencyRatio, modifiers.dependencyRatioChange),

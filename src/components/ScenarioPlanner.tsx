@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -65,20 +66,33 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
     environmentalScoreChange: 0,
   };
 
-  const [baseRisk, setBaseRisk] = useState<RiskAssessment>(getBaseRisk());
+  // Initialize with the base risk
+  const initialBaseRisk = getBaseRisk();
+  const [baseRisk, setBaseRisk] = useState<RiskAssessment>(initialBaseRisk);
   const [modifiers, setModifiers] = useState<ScenarioModifiers>(initialModifiers);
-  const [modifiedRisk, setModifiedRisk] = useState<RiskAssessment>({...baseRisk});
+  // Explicitly set the modified risk equal to the base risk initially
+  const [modifiedRisk, setModifiedRisk] = useState<RiskAssessment>(initialBaseRisk);
 
+  // Update base risk when view mode or projection year changes
   useEffect(() => {
     const newBaseRisk = getBaseRisk();
     setBaseRisk(newBaseRisk);
-    setModifiedRisk({...newBaseRisk});
+    // Reset modified risk to match base risk exactly
+    setModifiedRisk(newBaseRisk);
+    // Reset modifiers when the view mode or projection year changes
     setModifiers(initialModifiers);
   }, [viewMode, projectionYear, division]);
 
+  // Recalculate risk when modifiers change
   useEffect(() => {
-    const newRisk = calculateScenarioRisk(baseRisk, modifiers);
-    setModifiedRisk(newRisk);
+    // Only recalculate if any modifier is not zero
+    if (Object.values(modifiers).some(val => val !== 0)) {
+      const newRisk = calculateScenarioRisk(baseRisk, modifiers);
+      setModifiedRisk(newRisk);
+    } else {
+      // If all modifiers are zero, set modified risk equal to base risk
+      setModifiedRisk(baseRisk);
+    }
   }, [modifiers, baseRisk]);
 
   const handleModifierChange = (key: keyof ScenarioModifiers, value: number[]) => {
@@ -90,7 +104,8 @@ const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
 
   const resetModifiers = () => {
     setModifiers(initialModifiers);
-    setModifiedRisk({...baseRisk});
+    // Reset modified risk to exactly match base risk (not a clone)
+    setModifiedRisk(baseRisk);
     toast({
       title: "Scenario Reset",
       description: "All modifiers have been reset to their default values.",
