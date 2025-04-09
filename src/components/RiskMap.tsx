@@ -54,7 +54,6 @@ const RiskMap: React.FC<RiskMapProps> = ({
     <div 
       className={`bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl p-5 h-[550px] relative overflow-hidden shadow-xl border border-gray-700/50 transition-all duration-500 ${animateIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
     >
-      <div className="absolute inset-0 bg-blue-500/5 pointer-events-none"></div>
       <div className="relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
@@ -106,14 +105,13 @@ const RiskMap: React.FC<RiskMapProps> = ({
           </TabsList>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-[400px]">
-            {/* Map visualization */}
-            <div className="lg:col-span-2 relative h-full border border-gray-700/60 rounded-lg bg-gray-800/60 shadow-inner overflow-hidden glass-card" ref={mapContainerRef}>
+            {/* Map visualization - restored to pristine state without blurry effects */}
+            <div className="lg:col-span-2 relative h-full border border-gray-700/60 rounded-lg bg-gray-800 shadow-inner overflow-hidden">
               {Object.keys(mapUrls).map((mapKey) => (
                 <TabsContent key={mapKey} value={mapKey} className="h-full">
-                  <div className="absolute inset-0 bg-blue-900/5 backdrop-blur-[1px] z-10 pointer-events-none"></div>
                   <iframe 
                     src={mapUrls[mapKey as keyof typeof mapUrls]} 
-                    className="w-full h-full border-0 z-0"
+                    className="w-full h-full border-0"
                     title={mapLabels[mapKey as keyof typeof mapLabels]}
                     sandbox="allow-scripts allow-same-origin"
                     loading="lazy"
